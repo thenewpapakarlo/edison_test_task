@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Total</title>
+</head>
+<body>
+    <p>Загаданное число: {{ answer }}</p>
+    <p>Все загаданные числа: {{ numbers }}</p>
+    <br>
+    <p>Статистика экстрасенов:</p>
+    <ul>
+        {% for psychic in psychics %}
+            <li>
+                <p>Имя: {{ psychic.name }}</p>
+                <p>Уровень достоверности: {{ psychic.level }}</p>
+                <p>Все ответы: {{ psychic.answers }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    <br>
+    <input type="button" value="Ещё раз!" onclick="location.href='{% url 'start' %}'"  />
+</body>
+</html>

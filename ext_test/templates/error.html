@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error!</title>
+</head>
+<body>
+    <p>Введено некорректное значение правильного ответа!</p>
+    <p>{{ error }}</p>
+    <br>
+    <input type="button" value="Ещё раз!" onclick="location.href='{% url 'start' %}'"  />
+</body>
+</html>

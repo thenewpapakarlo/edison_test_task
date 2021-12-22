@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test results</title>
+</head>
+<body>
+    <p>Ответы экстрасенов:</p>
+    <ul>
+        {% for answer in answers %}
+            <li>
+                <p>Имя: {{ answer.name }}</p>
+                <p>Ответ: {{ answer.answer }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+    <br>
+    <p>Правильный ответ:</p>
+    <form action="/ext_test/total/" method="GET">
+        <input type="text" name="answer"><br>
+        <br>
+        <input type="submit" value="Подтвердить">
+    </form>
+</body>
+</html>
