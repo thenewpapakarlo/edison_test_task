@@ -28,7 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'fierce-lowlands-00624.herokuapp.com',
+    'pure-mountain-08082.herokuapp.com',
 ]
 
 
