@@ -1,9 +1,8 @@
-import random
-
+import pickle
 from django.shortcuts import render
-
 from django.views.generic import View
-from .psychic import new_psychic
+
+from .psychic import Psychic, Player
 
 
 # Create your views here.
@@ -23,12 +22,11 @@ class PsychicsResultView(View):
         template_name = 'ps_result.html'
         session = request.session
         if not session.get('psychics'):
-            session['psychics'] = [new_psychic(f'Name{number}') for number in range(5)]
-        answers = []
-        for psychic in session['psychics']:
-            psychic['last_answer'] = random.randrange(10, 100)
-            psychic['answers'].append(psychic['last_answer'])
-            answers.append({'name': psychic['name'], 'answer': psychic['last_answer']})
+            psychics = [Psychic(f'Name{number}') for number in range(5)]
+        else:
+            psychics = [pickle.loads(psychic) for psychic in session['psychics']]
+        answers = [{'name': psychic.name, 'answer': psychic.get_answer()} for psychic in psychics]
+        session['psychics'] = [pickle.dumps(psychic) for psychic in psychics]
         session.modified = True
         context = {'answers': answers}
         return render(request, template_name, context=context)
@@ -40,19 +38,29 @@ class TotalView(View):
     def get(request):
         template_name = 'total.html'
         session = request.session
+        if not session.get('player'):
+            player = Player()
+        else:
+            player = pickle.loads(session['player'])
         answer = request.GET.get('answer', None)
         try:
             answer_int = int(answer)
+            if not (9 < answer_int < 100):
+                raise ValueError('The number must be greater then 9 and less then 100')
         except ValueError as e:
+            player.numbers.append(answer)
+            session['player'] = pickle.dumps(player)
+            session.modified = True
             return render(request, 'error.html', context={'error': e})
-        if not session.get('numbers'):
-            session['numbers'] = []
-        session['numbers'].append(answer_int)
-        for psychic in session['psychics']:
-            if psychic['last_answer'] == answer_int:
-                psychic['level'] += 1
+        player.numbers.append(answer_int)
+        session['player'] = pickle.dumps(player)
+        psychics = [pickle.loads(psychic) for psychic in session['psychics']]
+        for psychic in psychics:
+            if psychic.answers[-1] == answer_int:
+                psychic.level += 1
             else:
-                psychic['level'] -= 1
+                psychic.level -= 1
+        session['psychics'] = [pickle.dumps(psychic) for psychic in psychics]
         session.modified = True
-        context = {'answer': answer_int, 'numbers': session['numbers'], 'psychics': session['psychics']}
+        context = {'answer': answer_int, 'numbers': player.numbers, 'psychics': psychics}
         return render(request, template_name, context=context)

@@ -1,2 +1,17 @@
-def new_psychic(name, level=0):
-    return {'name': name, 'level': level, 'last_answer': None, 'answers': []}
+import random
+
+
+class Psychic:
+    def __init__(self, name, level=0):
+        self.name = name
+        self.answers = []
+        self.level = level
+
+    def get_answer(self):
+        self.answers.append(random.randint(10, 100))
+        return self.answers[-1]
+
+
+class Player:
+    def __init__(self):
+        self.numbers = []
