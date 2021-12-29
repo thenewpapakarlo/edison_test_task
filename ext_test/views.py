@@ -1,4 +1,3 @@
-import pickle
 from django.shortcuts import render
 from django.views.generic import View
 
@@ -23,10 +22,10 @@ class PsychicsResultView(View):
         session = request.session
         if not session.get('psychics'):
             psychics = [Psychic(f'Name{number}') for number in range(5)]
+            session['psychics'] = psychics
         else:
-            psychics = [pickle.loads(psychic) for psychic in session['psychics']]
+            psychics = session['psychics']
         answers = [{'name': psychic.name, 'answer': psychic.get_answer()} for psychic in psychics]
-        session['psychics'] = [pickle.dumps(psychic) for psychic in psychics]
         session.modified = True
         context = {'answers': answers}
         return render(request, template_name, context=context)
@@ -40,8 +39,9 @@ class TotalView(View):
         session = request.session
         if not session.get('player'):
             player = Player()
+            session['player'] = player
         else:
-            player = pickle.loads(session['player'])
+            player = session['player']
         answer = request.GET.get('answer', None)
         try:
             answer_int = int(answer)
@@ -49,18 +49,15 @@ class TotalView(View):
                 raise ValueError('The number must be greater then 9 and less then 100')
         except ValueError as e:
             player.numbers.append(answer)
-            session['player'] = pickle.dumps(player)
             session.modified = True
             return render(request, 'error.html', context={'error': e})
         player.numbers.append(answer_int)
-        session['player'] = pickle.dumps(player)
-        psychics = [pickle.loads(psychic) for psychic in session['psychics']]
+        psychics = session['psychics']
         for psychic in psychics:
             if psychic.answers[-1] == answer_int:
                 psychic.level += 1
             else:
                 psychic.level -= 1
-        session['psychics'] = [pickle.dumps(psychic) for psychic in psychics]
         session.modified = True
         context = {'answer': answer_int, 'numbers': player.numbers, 'psychics': psychics}
         return render(request, template_name, context=context)
