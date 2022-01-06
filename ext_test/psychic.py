@@ -11,8 +11,8 @@ class Psychic:
         self.answers.append(random.randint(10, 100))
         return self.answers[-1]
 
-    def change_level(self, increase=False):
-        if increase:
+    def change_level(self, right_answer):
+        if self.answers[-1] == right_answer:
             self.level += 1
         else:
             self.level -= 1

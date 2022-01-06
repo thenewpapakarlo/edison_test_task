@@ -54,10 +54,7 @@ class TotalView(View):
         player.numbers.append(answer_int)
         psychics = session['psychics']
         for psychic in psychics:
-            if psychic.answers[-1] == answer_int:
-                psychic.change_level(True)
-            else:
-                psychic.change_level(False)
+            psychic.change_level(answer_int)
         session.modified = True
         context = {'answer': answer_int, 'numbers': player.numbers, 'psychics': psychics}
         return render(request, template_name, context=context)
